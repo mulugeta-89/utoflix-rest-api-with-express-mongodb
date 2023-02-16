@@ -55,4 +55,32 @@ movieRouter.route("/:movieId")
         })
         
     })
+movieRouter.route("/:movieId/comments")
+    .get((req, res, next) => {
+        res.send("getting all the commments")
+    })
+    .post((req, res, next) => {
+        res.send("posting the comments")
+    })
+    .put((req, res, next) => {
+        res.statusCode = 403
+        res.send("putting all the commments")
+    })
+    .delete((req, res, next) => {
+        res.send("deleting all the commments")
+    })
+movieRouter.route("/:movieId/comments/:commentId")
+    .get((req, res, next) => {
+        res.send("getting the comment")
+    })
+    .post((req, res, next) => {
+        res.statusCode = 403
+        res.send("getting the comment")
+    })
+    .put((req, res, next) => {
+        res.send("getting the comment")
+    })
+    .delete((req, res, next) => {
+        res.send("getting the comment")
+    })
 module.exports = movieRouter;
