@@ -8,6 +8,9 @@ const session = require("express-session")
 const FileStore = require("session-file-store")(session)
 const passport = require('passport')
 const authenticate = require("./authenticate")
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 var movieRouter = require("./routes/movie")
 var indexRouter = require('./routes/index');
@@ -15,7 +18,8 @@ var usersRouter = require('./routes/users');
 const uploadRouter = require('./routes/uploadRouter');
 
 
-const url = "mongodb://127.0.0.1:27017/MOVIE";
+//var url = process.env.MONGO_URL;
+var url = "mongodb+srv://mulugetahail89:Mulu2835@cluster0.ag2jxwy.mongodb.net/test"
 var connect = mongoose.connect(url)
 connect.then(() => {
   console.log("database connected successfully!")
