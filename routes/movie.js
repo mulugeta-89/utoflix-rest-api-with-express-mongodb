@@ -1,27 +1,28 @@
 const express = require("express")
 const movieRouter = express.Router()
 var Movies = require("../models/movie")
+const authenticate = require("../authenticate")
 movieRouter.route("/")
     .get((req, res, next) => {
-        Movies.find().then((moviees) => {
+        Movies.find().populate('comment.author').then((moviees) => {
             res.statusCode = 200
             res.setHeader("content-type", "application/json")
             res.json(moviees)
         }).catch((err) => next(err))
         
     })
-    .post((req, res, next) => {
+    .post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
         Movies.create(req.body).then((movie) => {
             res.statusCode = 200
             res.setHeader("content-type", "application/json")
             res.json(movie)
         })
     })
-    .put((req, res, next) => {
+    .put(authenticate.verifyUser, authenticate.verifyAdmin,(req, res, next) => {
         res.statusCode = 403
         res.send("put operation is not supported")
     })
-    .delete((req, res, next) => {
+    .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
         Movies.deleteMany({}).then((resp) => {
             res.statusCode = 200
             res.setHeader("content-type", "application/json")
@@ -30,24 +31,24 @@ movieRouter.route("/")
     })
 movieRouter.route("/:movieId")
     .get((req, res, next) => {
-        Movies.findById(req.params.movieId).then((movie) => {
+        Movies.findById(req.params.movieId).populate('comment.author').then((movie) => {
             res.statusCode = 200
             res.setHeader("content-type", "application/json")
             res.json(movie)
         })
     })
-    .post((req, res, next) => {
+    .post(authenticate.verifyUser, authenticate.verifyAdmin,(req, res, next) => {
         res.statusCode = 403
         res.send("post operation is not supported")
     })
-    .put((req, res, next) => {
+    .put(authenticate.verifyUser, authenticate.verifyAdmin,(req, res, next) => {
         Movies.findByIdAndUpdate(req.params.movieId, { $set: req.body }, { new: true }).then((movie) => {
             res.statusCode = 200
             res.setHeader("content-type", "application/json")
             res.json(movie)
         })
     })
-    .delete((req, res, next) => {
+    .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
         Movies.findByIdAndRemove(req.params.movieId).then((resp) => {
             res.statusCode = 200
             res.setHeader("content-type", "application/json")
@@ -57,7 +58,7 @@ movieRouter.route("/:movieId")
     })
 movieRouter.route("/:movieId/comments")
     .get((req, res, next) => {
-        Movies.findById(req.params.movieId).then((movie) => {
+        Movies.findById(req.params.movieId).populate('comment.author').then((movie) => {
             if (movie) {
                 res.statusCode = 200
                 res.setHeader("content-type", "application/json")
@@ -70,7 +71,7 @@ movieRouter.route("/:movieId/comments")
             }
         })
     })
-    .post((req, res, next) => {
+    .post(authenticate.verifyUser, (req, res, next) => {
         Movies.findById(req.params.movieId)
             .then((movie) => {
                 if (movie) {
@@ -87,11 +88,11 @@ movieRouter.route("/:movieId/comments")
                 }
             })
     })
-    .put((req, res, next) => {
+    .put(authenticate.verifyUser, (req, res, next) => {
         res.statusCode = 403
         res.send("put operation is not supported")
     })
-    .delete((req, res, next) => {
+    .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
         Movies.findById(req.params.movieId)
             .then((movie) => {
                 if (movie && movie.comment) {
@@ -111,6 +112,7 @@ movieRouter.route("/:movieId/comments")
 movieRouter.route("/:movieId/comments/:commentId")
     .get((req, res, next) => {
         Movies.findById(req.params.movieId)
+            .populate('comment.author')
             .then((movie) => {
                 if (movie && movie.comment) {
                     var comment = movie.comment.filter((com)=> com._id == req.params.commentId)
@@ -128,11 +130,11 @@ movieRouter.route("/:movieId/comments/:commentId")
                 }
             })
     })
-    .post((req, res, next) => {
+    .post(authenticate.verifyUser, (req, res, next) => {
         res.statusCode = 403
         res.send("post operation is not supported")
     })
-    .put((req, res, next) => {
+    .put(authenticate.verifyUser, (req, res, next) => {
         Movies.findById(req.params.movieId)
             .then((movie) => {
                 if (movie && movie.comment) {
@@ -161,7 +163,7 @@ movieRouter.route("/:movieId/comments/:commentId")
                 }
             }).catch((err) => next(err))
     })
-    .delete((req, res, next) => {
+    .delete(authenticate.verifyUser,(req, res, next) => {
         Movies.findById(req.params.movieId)
             .then((movie) => {
                 if (movie && movie.comment) {

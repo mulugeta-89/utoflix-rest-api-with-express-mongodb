@@ -4,10 +4,15 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var mongoose = require("mongoose")
+const session = require("express-session")
+const FileStore = require("session-file-store")(session)
+const passport = require('passport')
+const authenticate = require("./authenticate")
 
 var movieRouter = require("./routes/movie")
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+
 
 const url = "mongodb://127.0.0.1:27017/MOVIE";
 var connect = mongoose.connect(url)
@@ -25,6 +30,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(passport.initialize())
+app.use(passport.session());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
