@@ -11,8 +11,9 @@ const userSchema = new Schema({
         default: ""
     },
     admin: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        type: Boolean,
+        default: false
+        
     }
 }, {
     timestamps: true

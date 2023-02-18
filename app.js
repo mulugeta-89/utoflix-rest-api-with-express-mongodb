@@ -12,6 +12,7 @@ const authenticate = require("./authenticate")
 var movieRouter = require("./routes/movie")
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+const uploadRouter = require('./routes/uploadRouter');
 
 
 const url = "mongodb://127.0.0.1:27017/MOVIE";
@@ -37,6 +38,7 @@ app.use(passport.session());
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use("/movies", movieRouter)
+app.use("/uploadmovies", uploadRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
